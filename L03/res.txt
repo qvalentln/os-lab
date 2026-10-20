@@ -1,0 +1,7 @@
+1.
+-- download openbsd kernel (v7.9)
+su
+ftp -o /tmp/sys.tar.gz https://cdn.openbsd.org/pub/OpenBSD/7.9/sys.tar.gz
+cd /usr/src
+tar xzf /tmp/sys.tar.gz
+exit
