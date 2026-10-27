@@ -1,0 +1,8 @@
+1.
+
+machine command won't work on freeBSD, try uname -m
+
+copying the kernel can be done in
+
+su
+cp /boot/kernel/kernel /boot/kernel/kernel.old
