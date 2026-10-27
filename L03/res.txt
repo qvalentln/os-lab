@@ -1,4 +1,5 @@
 1.
+<<<<<<< HEAD
 
 machine command won't work on freeBSD, try uname -m
 
@@ -6,3 +7,11 @@ copying the kernel can be done in
 
 su
 cp /boot/kernel/kernel /boot/kernel/kernel.old
+=======
+-- download openbsd kernel (v7.9)
+su
+ftp -o /tmp/sys.tar.gz https://cdn.openbsd.org/pub/OpenBSD/7.9/sys.tar.gz
+cd /usr/src
+tar xzf /tmp/sys.tar.gz
+exit
+>>>>>>> b508ae42cae4c20c076962b5b8d11810fd31cd5d
