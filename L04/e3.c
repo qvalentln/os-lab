@@ -24,14 +24,17 @@ int main(int argc, char* argv[]) {
 			}
 			printf("%d\n", clz);
 
-			printf("Done Parent %d Child %d\n", getppid(), getpid());
+			printf("Done Parent %d Me %d\n", getppid(), getpid());
+
+			// stop the program(child) here
 			exit(0);
 		}
 	}
 
-	for(int i=1;i<argc;++i) wait(NULL);
+	// wait for all child processes 
+	while(wait(NULL) > 0);
 	
-	printf("Done Parent %d\n Child", getppid(), getpid());
+	printf("Done Parent %d Child %d\n", getppid(), getpid());
 
 	return 0;
 }

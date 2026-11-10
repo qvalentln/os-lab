@@ -11,7 +11,7 @@ int main() {
 	}
 	else if(pid == 0) {
 		// child
-		printf("my PID = %d, child PID = %d\n", getppid(), getpid());
+		// printf("my PID = %d, child PID = %d\n", getppid(), getpid());
 		char* argv[] = {"ls", NULL};
 		execve("/bin/ls", argv, NULL);
 			
@@ -21,7 +21,7 @@ int main() {
 		// parent
 		
 		wait(NULL);
-		printf("child %d finished \n", pid);
+		// printf("child %d finished \n", pid);
 
 		// printf("Last\n");
 		

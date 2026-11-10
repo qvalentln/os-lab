@@ -7,8 +7,8 @@
 
 - [x] 01 CLI and Execution
 - [x] 02 System Calls
-- [ ] 03 openBSD kernel comp & syscall implementations
-- [ ] 04 Processes
+- [x] 03 openBSD kernel comp & syscall implementations
+- [x] 04 Processes
 - [ ] 05 IPC - Signals
 - [ ] 06 IPC - Shared Memory
 - [ ] 07 IPC - Pipes
