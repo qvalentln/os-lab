@@ -17,7 +17,7 @@ void handler(int sig) {
 			printf("pid %d exited with some status \n", pid);
 		}
 		else if(WIFSIGNALED(status)) {
-			printf("pid %d killed by some signal %d \n", pid);
+			printf("pid %d killed by some signal \n", pid);
 		}
 	}
 }
