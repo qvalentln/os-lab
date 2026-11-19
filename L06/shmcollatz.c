@@ -12,6 +12,7 @@
 #define PAGE_SIZE 4096
 
 int main(int argc, char* argv[]) {
+
 	// create some shared memory object
 
 	char shm_name[] = "/myshm";
@@ -25,21 +26,25 @@ int main(int argc, char* argv[]) {
 
 	// define the shm obj size
 	size_t shm_size = n * PAGE_SIZE;
+
 	if(ftruncate(shm_fd, shm_size) < 0) {
 		perror(NULL);
 		shm_unlink(shm_name);
 		return errno;
 	}
 
-	for(int i=0;i<n;++i) {
+	printf("Starting parent: %d \n", getpid());
+	
+	for(int i = 0; i < n; ++i) {
 		pid_t pid = fork();
 		if(pid < 0) {
+			perror(NULL);
 			return errno;
 		}
 		else if(pid == 0) {
-			// child
+			// child instructions
 
-			char* shm_area = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE,
+			char* shm_area = mmap(NULL, PAGE_SIZE, PROT_WRITE,
 								MAP_SHARED, shm_fd, i * PAGE_SIZE);
 
 			if(shm_area == MAP_FAILED) {
@@ -48,38 +53,40 @@ int main(int argc, char* argv[]) {
 			}
 
 			long clz = strtol(argv[i + 1], NULL, 10);
-			size_t pos = 0;
-			pos += snprintf(shm_area + pos, PAGE_SIZE - pos, "%ld: ", clz);
 
-			while(clz > 1 && pos < PAGE_SIZE) {
-				pos += snprintf(shm_area + pos, PAGE_SIZE - pos, "%ld ", clz); 
+			shm_area += sprintf(shm_area, "%ld: ", clz);
+			shm_area += sprintf(shm_area, "%ld ", clz);
+			while(clz > 1) {
 				if(clz % 2 == 0) clz /= 2;
 				else clz = clz * 3 + 1;
+				shm_area += sprintf(shm_area, "%ld ", clz);
 			}
-			if(pos < PAGE_SIZE) {
-				snprintf(shm_area + pos, PAGE_SIZE - pos, "%ld: ", clz);
-			}
+			shm_area += sprintf(shm_area, "\n");
+			printf("Done Parent %d Me %d \n", getppid(), getpid());
 			munmap(shm_area, PAGE_SIZE);
-			close(shm_fd);
-
-			printf("Done Parent %d Me %d\n", getppid(), getpid());
 			exit(0);
 		}
 		
-	}
-	while(wait(NULL) > 0);
-
-	char* shm_ptr = mmap(NULL, shm_size, PROT_READ, MAP_SHARED, shm_fd, 0);
-	if(shm_ptr == MAP_FAILED) {
-		perror(NULL);
-		shm_unlink(shm_name);
-		return errno;
-	}
-
-	for(int i = 0; i < n; ++i) {
-		printf("%s\n", shm_ptr + i * PAGE_SIZE);
+		
 	}
 	
-	munmap(shm_ptr, shm_size);
+	while(wait(NULL) > 0);
+
+	for(int i = 0; i < n; ++i) {
+		char* shm_area = mmap(NULL, PAGE_SIZE, PROT_READ, 
+							MAP_SHARED, shm_fd, i * PAGE_SIZE);
+		if(shm_area == MAP_FAILED) {
+			perror(NULL);
+			shm_unlink(shm_name);
+			return errno;
+		}		
+
+		printf("%s", shm_area);
+		munmap(shm_area, PAGE_SIZE);
+	}
+	
+	
+	printf("Done Parent %d Me %d\n", getppid(), getpid());
+	shm_unlink(shm_name);
 	return 0;
 }

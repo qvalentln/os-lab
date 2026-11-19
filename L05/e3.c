@@ -4,22 +4,14 @@
 #include <errno.h> // errno
 #include <signal.h> // signal
 
-#define CH_NUM 10
+#define CH_NUM 88
+
 
 void handler(int sig) {
 	pid_t pid;
 	int status;
+	while((pid = waitpid(-1,  &status, 0)) > 0);
 
-	// pid_t waitpid(pid_t wpid, int *status, int options);
-
-	while((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-		if(WIFEXITED(status)) {
-			printf("pid %d exited with some status \n", pid);
-		}
-		else if(WIFSIGNALED(status)) {
-			printf("pid %d killed by some signal \n", pid);
-		}
-	}
 }
 
 
