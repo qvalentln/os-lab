@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 	for(int i=0;i < k; ++i) {
 		
 		char* shm_area = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, 
-								i * PAGE_SIZE);
+								shm_fd, i * PAGE_SIZE);
 		total += atoi(shm_area);
 		printf("%s", strchr(shm_area, ' ')  + 1);
 		munmap(shm_area, PAGE_SIZE);
