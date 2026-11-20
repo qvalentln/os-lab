@@ -1,4 +1,6 @@
 
+// this is just a draft
+
 volatile int isint = 0;
 
 int isprime(int x) {
@@ -31,7 +33,7 @@ int main(int argc, char* argv[]) {
 
 	ftruncate(shm_fd, shm_size);
 	
-	int total = 0;
+
 	
 	for(int i = 0; i < k; ++i) {
 		pid_t pid = fork();
@@ -46,7 +48,7 @@ int main(int argc, char* argv[]) {
 			
 			printf("COPIL: %d, PARINTE: %d \n", getpid(), getppid());
 			for(int y = i * (n / k) + 1; y <= (i + 1) * (n / k); ++y) {
-				cnt += isprime(y)
+				cnt += isprime(y);
 				if(isint) {
 					sprintf(shm_area, "%d copil %ld: [%ld, %ld] a gasit %ld numere prime si a fost oprit la %ld\n",
 										cnt, i, i * (n / k) + 1, (i + 1) * (n / k), y);
@@ -57,10 +59,8 @@ int main(int argc, char* argv[]) {
 								
 			}
 
-			total += cnt;
-
-			sprintf(shm_area, "copil %ld: [%ld, %ld] a gasit %ld numere prime\n",
-								 i, i * (n / k) + 1, (i + 1) * (n / k), cnt);
+			sprintf(shm_area, "%d copil %ld: [%ld, %ld] a gasit %ld numere prime\n",
+								 cnt, i, i * (n / k) + 1, (i + 1) * (n / k), cnt);
 
 			munmap(shm_area, PAGE_SIZE);
 			exit(0);
@@ -69,10 +69,13 @@ int main(int argc, char* argv[]) {
 
 	while(wait(NULL) > 0);
 
+
+	int total = 0;
 	for(int i=0;i < k; ++i) {
-		total += atoi(shm_area);
+		
 		char* shm_area = mmap(NULL, PAGE_SIZE, PROT_READ, MAP_SHARED, 
 								i * PAGE_SIZE);
+		total += atoi(shm_area);
 		printf("%s", strchr(shm_area, ' ')  + 1);
 		munmap(shm_area, PAGE_SIZE);
 	}
