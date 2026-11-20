@@ -32,8 +32,9 @@ int main(int argc, char* argv[]) {
 			close(shm_fd);
 			char* args[] = {line, NULL};
 			execvp(line, args); // cauta in $PATH
+			// execve(line, args, NULL); // cere line = path absolut
 
-			// execve(line, args, NULL); // cere line = path absolut		
+			exit(1);		
 		}
 		int status;
 		waitpid(pid, &status, 0);
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]) {
 		printf("%s", shm_area);
 		munmap(shm_area, PAGE_SIZE);
 		
-		double elapsed = (end.tv_sec - start_tv.sec) + (end_tv.usec - start_tv.usec) / 1000000.0;
+		double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
 
 		printf("de executie: %.6f s\n", elapsed);
 
