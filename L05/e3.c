@@ -4,7 +4,7 @@
 #include <errno.h> // errno
 #include <signal.h> // signal
 
-#define CH_NUM 88
+#define CH_NUM 30
 
 
 void handler(int sig) {
