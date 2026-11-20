@@ -1,5 +1,5 @@
 
-
+volatile int isint = 0;
 
 int isprime(int x) {
 	if(x < 2) return 0;
@@ -14,7 +14,7 @@ int isprime(int x) {
 
 
 void handler(int sig) {
-	
+	isint = 1;
 }
 
 int main(int argc, char* argv[]) {
@@ -22,30 +22,33 @@ int main(int argc, char* argv[]) {
 	char sh_name[] = "/myshm";
 	int shm_fd = shm_open(sh_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
-	int sgn = signal(SIGINT, handler);
+	signal(SIGINT, SIG_IGN);
 
 	int n = strtol(argv[1], NULL, 10);
-	int k = argv[2];
+	int k = strtol(argv[2], NULL, 10);
 
 	size_t shm_size = k * PAGE_SIZE;
+
+	ftruncate(shm_fd, shm_size);
+	
 	int total = 0;
 	
 	for(int i = 0; i < k; ++i) {
 		pid_t pid = fork();
 		
 		if(pid == 0) {
-
+			signal(SIGINT, handler);
 			char* shm_area = mmap(NULL, PAGE_SIZE, PROT_WRITE, 
 							MAP_SHARED, shm_fd, i * PAGE_SIZE);
 			int cnt = 0;
-			int isint = 0;
+			isint = 0;
 
 			
 			printf("COPIL: %d, PARINTE: %d \n", getpid(), getppid());
 			for(int y = i * (n / k) + 1; y <= (i + 1) * (n / k); ++y) {
 				cnt += isprime(y)
 				if(isint) {
-					shm_area += sprintf(shm_area, "copil %ld: [%ld, %ld] a gasit %ld numere prime si a fost oprit la %ld\n",
+					sprintf(shm_area, "copil %ld: [%ld, %ld] a gasit %ld numere prime si a fost oprit la %ld\n",
 										i, i * (n / k) + 1, (i + 1) * (n / k), y);
 					munmap(shm_area, PAGE_SIZE);
 					exit(1);
@@ -56,7 +59,7 @@ int main(int argc, char* argv[]) {
 
 			total += cnt;
 
-			shm_area += sprintf(shm_area, "copil %ld: [%ld, %ld] a gasit %ld numere prime\n",
+			sprintf(shm_area, "copil %ld: [%ld, %ld] a gasit %ld numere prime\n",
 								 i, i * (n / k) + 1, (i + 1) * (n / k), cnt);
 
 			munmap(shm_area, PAGE_SIZE);
